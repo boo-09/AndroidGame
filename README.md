@@ -11,7 +11,7 @@ Unityで共同制作したAndroid向けゲームのうち、私が担当した�
 - チーム人数：3人
 - 開発環境：Unity 6000.3.14f1 / C#
 - 開発状況：現在開発中
-- 担当：プレイヤー、UI、ミニマップ、ゲーム進行など
+- 担当：プレイヤー、UI、ミニマップ、ゲーム進行、Stage6〜10の追加実装、宝箱のランダム配置、サウンド制御
 
 ## 担当範囲
 
@@ -25,12 +25,20 @@ Unityで共同制作したAndroid向けゲームのうち、私が担当した�
 | プレイヤー | プレイヤー実装、移動・攻撃・HP・弾数・リロードの制御、攻撃モーションとの連携 | [PlayerController2.cs](Assets/Scripts/PlayerController2.cs) |
 | スキル | マップの視野拡大に関わる部分のみ | [担当部分の抜粋](docs/MapRevealSkill.md) |
 | UI配置の補助 | 入れ子のCanvasのレイアウト調整 | [NestedCanvasLayout.cs](Assets/Scripts/NestedCanvasLayout.cs) |
+| Stage6〜10の仕掛け | 順序入力・複数スイッチによる謎解き、鍵とゲートの解放、スイッチ接触判定 | [FortPuzzle.cs](Assets/Scripts/FortPuzzle.cs)、[FortPuzzleSwitch.cs](Assets/Scripts/FortPuzzleSwitch.cs) |
+| Stage6〜10の戦闘・罠 | 予告付きの床罠、投射物の移動と衝突判定、毒・継続回復 | [FortTrap.cs](Assets/Scripts/FortTrap.cs)、[FortThrownProjectile.cs](Assets/Scripts/FortThrownProjectile.cs)、[PlayerHealthEffects.cs](Assets/Scripts/PlayerHealthEffects.cs) |
+| ステージ制作ツール | Stage6〜10の生成・配置と設定の検証、Play Modeでの進行・戦闘チェック | [FortStageBuilder.cs](Assets/Scripts/Editor/FortStageBuilder.cs)、[FortStageValidator.cs](Assets/Scripts/Editor/FortStageValidator.cs)、[FortStagePlayChecks.cs](Assets/Scripts/Editor/FortStagePlayChecks.cs)、[FortCombatPlayChecks.cs](Assets/Scripts/Editor/FortCombatPlayChecks.cs) |
+| 宝箱 | 既存の宝箱スクリプトに追加した、候補地点からのランダムスポーン | [担当部分の抜粋](docs/TreasureChestRandomSpawn.md) |
+| サウンド | ステージBGM、クリア・ゲームオーバー・撃破の効果音、攻撃モーションのAnimation Eventからの再生 | [GameAudio.cs](Assets/Scripts/GameAudio.cs) |
 
 ## 実装のポイント
 
 - ミニマップはRenderTextureと探索状態のテクスチャを使用し、移動に応じて探索領域を更新します。
 - マップの視野拡大スキルは、ミニマップの探索半径を1広げます。スキルシステム全体は掲載していません。
 - 攻撃モーションはAnimatorのDoAttackトリガーで呼び出します。カプセルによる攻撃判定、同じ敵への重複ダメージの防止、後方・障害物越しの攻撃の除外を実装しています。
+- Stage6〜10では順序付きの紋章・複数スイッチ、予告から発動する床罠、壁で遮られる投射物などを実装しています。シーン生成・設定検証・Play Modeのチェック用コードも掲載しています。
+- 宝箱は有効な候補地点からランダムに配置し、候補がない場合は固定位置を保ちます。
+- GameAudioはシーンをまたいでBGM・効果音を管理します。攻撃音はAnimation Eventから、撃破音は遅延後に再生します。
 
 ## 開発環境と依存関係
 
@@ -43,10 +51,13 @@ Unityで共同制作したAndroid向けゲームのうち、私が担当した�
 - StarterAssetsInputs：入力処理。
 - CameraController：ステータス引き継ぎ時のカメラ設定。
 - Enemy：敵へのダメージとノックバック。
-- FortStages.FortPuzzle、Door：ステージ目標・仕掛けの進捗表示とゴール判定の連携。
-- GameAudio：クリア・ゲームオーバー時の効果音。
+- Door、Key、RareEnemy：既存のゴール判定・鍵・レア敵処理。
+- TreasureChest：既存の宝箱処理。担当したランダム配置部分のみMarkdownに抜粋。
 - PlayerSkills：スキル取得と討伐時の通知。担当部分のみMarkdownに抜粋。
 - Inspectorで設定する参照、AnimatorとDoAttackトリガー、ステージおよびロビーのシーン。
+- Resources/GameAudioのPrefab、AudioSourceと音声クリップ、ステージ生成ツールが参照する既存Prefab・素材・フォント。
+
+Editor配下のツールはUnityEditor APIと元プロジェクトのシーン・素材を使用します。FortStageBuilderの現行コードにはStage3〜5向けの生成機能も含まれています。掲載はコード資料としてのもので、このリポジトリ単体で生成・検証を実行できる構成にはしていません。
 
 共同制作のゲーム全体や外部素材を再配布するリポジトリではありません。
 
