@@ -582,6 +582,17 @@ public class PlayerController2 : MonoBehaviour
         UpdateHearts();
     }
 
+    public void Heal(float amount)
+    {
+        if (IsDead() || amount <= 0f)
+        {
+            return;
+        }
+
+        hp = Mathf.Min(maxHp, hp + amount);
+        UpdateHearts();
+    }
+
     public void AddAttackDamage(float amount)
     {
         attackDamage += amount;
@@ -688,24 +699,55 @@ public class PlayerController2 : MonoBehaviour
 
             allHearts[i].gameObject.SetActive(true);
 
-            // 現在HPがあるハート
-            if (i < hp)
-            {
-                allHearts[i].color =
-                    Color.white;
-            }
-            // HPがないハート
-            else
-            {
-                allHearts[i].color =
-                    new Color(
-                        0.3f,
-                        0.3f,
-                        0.3f,
-                        1f
-                    );
-            }
+            // 灰色のハートに白い横方向の塗りを重ね、0.5HPを半分で表示する。
+            Image heart = allHearts[i];
+            heart.color = new Color(0.3f, 0.3f, 0.3f, 1f);
+            heart.type = Image.Type.Filled;
+            heart.fillMethod = Image.FillMethod.Horizontal;
+            heart.fillOrigin = (int)Image.OriginHorizontal.Left;
+            heart.fillAmount = Mathf.Clamp01(maxHp - i);
+
+            Image fill = GetHeartFill(heart);
+            fill.sprite = heart.sprite;
+            fill.overrideSprite = heart.overrideSprite;
+            fill.material = heart.material;
+            fill.preserveAspect = heart.preserveAspect;
+            fill.color = Color.white;
+            fill.fillAmount = Mathf.Clamp01(hp - i);
         }
+    }
+
+    private Image GetHeartFill(Image heart)
+    {
+        const string fillName = "HalfHeartFill";
+        Transform existing = heart.transform.Find(fillName);
+        if (existing != null)
+        {
+            return existing.GetComponent<Image>();
+        }
+
+        // Imageだけを生成するため、ハートPrefabの子を重複コピーしない。
+        GameObject fillObject = new GameObject(
+            fillName,
+            typeof(RectTransform),
+            typeof(CanvasRenderer),
+            typeof(Image)
+        );
+        fillObject.layer = heart.gameObject.layer;
+        RectTransform rect = fillObject.GetComponent<RectTransform>();
+        rect.SetParent(heart.transform, false);
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+
+        Image fill = fillObject.GetComponent<Image>();
+        fill.type = Image.Type.Filled;
+        fill.fillMethod = Image.FillMethod.Horizontal;
+        fill.fillOrigin = (int)Image.OriginHorizontal.Left;
+        fill.raycastTarget = false;
+        fill.maskable = heart.maskable;
+        return fill;
     }
 
     // =========================================================

@@ -12,7 +12,7 @@ Unityで共同制作したAndroid向けゲームのうち、私が担当した�
 - 開発環境：Unity 6000.3.14f1 / C#
 - 開発状況：現在開発中
 - 担当：プレイヤー、UI、ミニマップ、ゲーム進行など
-- 
+
 ## 担当範囲
 
 | 分野 | 内容 | コード |
@@ -43,6 +43,8 @@ Unityで共同制作したAndroid向けゲームのうち、私が担当した�
 - StarterAssetsInputs：入力処理。
 - CameraController：ステータス引き継ぎ時のカメラ設定。
 - Enemy：敵へのダメージとノックバック。
+- FortStages.FortPuzzle、Door：ステージ目標・仕掛けの進捗表示とゴール判定の連携。
+- GameAudio：クリア・ゲームオーバー時の効果音。
 - PlayerSkills：スキル取得と討伐時の通知。担当部分のみMarkdownに抜粋。
 - Inspectorで設定する参照、AnimatorとDoAttackトリガー、ステージおよびロビーのシーン。
 

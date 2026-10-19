@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections;
 using System.Text.RegularExpressions;
 using System.Runtime.Serialization;
+using FortStages;
 
 public class GameManager : MonoBehaviour
 {
@@ -28,6 +29,22 @@ public class GameManager : MonoBehaviour
     [Header("ゲーム設定")]
     [SerializeField] private float fallThreshold = -5f;
     [SerializeField] private int maxStage = 20;
+
+    [Header("ステージ目標（必要なステージのみ設定）")]
+    public TMP_Text titleText;
+    public TMP_Text statusText;
+    public string stageTitle;
+    [TextArea] public string objective;
+    public FortPuzzle puzzle;
+    public GameObject[] keys = new GameObject[0];
+    public Door goal;
+
+    private int displayedKeyCount = -1;
+    private int displayedPuzzleProgress = -1;
+    private bool displayedSolved;
+    private bool displayedWrong;
+
+    public int CollectedKeys => collectedItems;
 
     const string NEXT_STAGE_KEY = "NextStage";
     const string BEST_TIME_KEY_PREFIX = "BestTime_";
@@ -59,12 +76,18 @@ public class GameManager : MonoBehaviour
             currentTime += Time.deltaTime;
             UpdateUI();
             CheckDeath();
+
+            // 最後の鍵を出口のそばで拾った場合も、接触し直さずクリアできる。
+            if (CanPause && CollectedKeys >= totalItems && goal != null && player != null &&
+                (player.transform.position - goal.transform.position).sqrMagnitude <= 4f)
+                TryGoal();
         }
     }
 
     void InitializeGame()
     {
         player = FindFirstObjectByType<PlayerController2>();
+        if (titleText != null) titleText.text = stageTitle;
 
         if (player != null)
         {
@@ -137,6 +160,7 @@ public class GameManager : MonoBehaviour
     {
         if (isGameOver) return; // すでにクリア/ゲームオーバー済みなら何もしない
         isGameOver = true;
+        GameAudio.PlayGameClear();
 
         UpdateBestTime();
 
@@ -188,6 +212,7 @@ public class GameManager : MonoBehaviour
     {
         if (isGameOver) return; // すでにクリア/ゲームオーバー済みなら何もしない
         isGameOver = true;
+        GameAudio.PlayGameOver();
 
         if (gameOverPanel != null)
         {
@@ -212,6 +237,32 @@ public class GameManager : MonoBehaviour
         {
             keyText.text = $"Keys: {collectedItems}/{totalItems}";
         }
+
+        UpdateObjectiveUI();
+    }
+
+    private void UpdateObjectiveUI()
+    {
+        int progress = puzzle == null ? 0 : puzzle.Progress;
+        bool solved = puzzle != null && puzzle.Solved;
+        bool wrong = puzzle != null && puzzle.LastInputWrong;
+        if (displayedKeyCount == CollectedKeys && displayedPuzzleProgress == progress &&
+            displayedSolved == solved && displayedWrong == wrong) return;
+
+        displayedKeyCount = CollectedKeys;
+        displayedPuzzleProgress = progress;
+        displayedSolved = solved;
+        displayedWrong = wrong;
+        if (statusText == null) return;
+
+        string text = objective + $"\n鍵: {CollectedKeys}/{totalItems}";
+        if (puzzle != null)
+            text += solved ? "  謎: 解決済み" : $"  謎: {progress}/{puzzle.RequiredCount}";
+        if (wrong)
+            text += "\n順序が違います。最初からやり直そう";
+        else if (CollectedKeys >= totalItems)
+            text += "\n出口へ向かおう";
+        statusText.text = text;
     }
 
     void UpdateBestTimeUI()
@@ -299,6 +350,9 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene("LobbyScene");
     }
+
+    // ランク表示用にクリアタイムを公開する
+    public float CurrentTime => currentTime;
 
     public bool CanPause => isGameStarted && !isGameOver && !isPaused && Time.timeScale > 0f;
     public bool IsPaused => isPaused;
