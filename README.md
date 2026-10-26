@@ -1,19 +1,29 @@
 # AndroidGame — 担当実装のポートフォリオ
 
 Unityで共同制作したAndroid向けゲームのうち、私が担当した実装をまとめています。ゲーム全体ではなく、コードを閲覧するためのリポジトリです。
-## Windows版を遊ぶ
+## ゲームをプレイする
 
-[Windows 64bit版ZIPをダウンロード](https://github.com/boo-09/AndroidGame/releases/download/windows-2026-10-19/AndroidGame-Windows-x64-20261019.zip) · [リリース詳細](https://github.com/boo-09/AndroidGame/releases/tag/windows-2026-10-19)
+[GitHub Releases — Windows v1.0.0](https://github.com/boo-09/AndroidGame/releases/tag/v1.0.0) · [Windows 64bit版ZIPをダウンロード](https://github.com/boo-09/AndroidGame/releases/download/v1.0.0/AndroidGame_Windows_v1.0.0.zip)
 
-2026-10-19時点のローカルプロジェクトからUnity 6000.3.14f1でビルドしたものです。ロビーとStage1〜15を収録しています。
+2026-10-27時点のWindows 64bit版です。Unity 6000.3.14f1でビルドし、ロビーとStage1〜Stage20を収録しています。
 
-1. ZIPをすべて展開します。
-2. 展開したフォルダのAndroidGame.exeを起動します。
-3. AndroidGame_DataやUnityPlayer.dllは同じフォルダ構成で保持してください。
+1. ReleaseのAssetsからAndroidGame_Windows_v1.0.0.zipをダウンロードします。
+2. ZIPを右クリックし、「すべて展開」でフォルダごと展開します。
+3. 展開したフォルダ内のAndroidGame.exeを起動します。
+4. AndroidGame_Data、UnityPlayer.dll、MonoBleedingEdgeなどは同じフォルダ構成で保持してください。
 
-移動：W/A/S/Dまたは矢印キー。攻撃：Spaceまたは画面の攻撃ボタン。ポーズ／再開：Escまたはメニューボタン。UIはマウスで操作します。
+| 操作 | 入力 |
+| --- | --- |
+| 移動 | W/A/S/D または矢印キー |
+| 攻撃 | Space または画面の攻撃ボタン |
+| ポーズ／再開 | Esc または画面のメニューボタン |
+| UIの選択 | マウス |
 
 配布ZIPは共同制作ゲームのWindows版です。以下の掲載ソースは自身の担当実装を抜粋しています。
+
+音源クレジット：BGM [甘茶の音楽工房](https://amachamusic.chagasi.com/)、音楽・効果音 [魔王魂](https://maou.audio/)、効果音 [ポケットサウンド](https://pocket-se.info/)。
+
+[過去の配布：2026-10-19版（Stage1〜15）](https://github.com/boo-09/AndroidGame/releases/tag/windows-2026-10-19)
 
 ## プロジェクト概要
 
